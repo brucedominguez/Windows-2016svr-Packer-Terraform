@@ -1,0 +1,64 @@
+{
+  "min_packer_version": "0.12.0",
+  "variables": {
+    "profile": "YOUR_AWS_POFILE",
+    "region": "YOUR_AWS_REGION"
+  },
+
+  "builders": [{
+    "type": "amazon-ebs",
+    "profile": "{{user `profile`}}",
+    "region": "{{user `region`}}",
+    "source_ami_filter": {
+      "filters": {
+        "virtualization-type": "hvm",
+        "name": "Windows_Server-2016-English-Full-Base-*",
+        "root-device-type": "ebs"
+      },
+      "owners": ["amazon"],
+      "most_recent": true
+    },
+    "instance_type": "t2.micro",
+    "ami_name": "planit-ci-test-dev-windows2016-{{timestamp}}",
+    "user_data_file":"../scripts/SetUpWinRM.ps1",
+    "communicator": "winrm",
+    "winrm_username": "Administrator",
+    "winrm_insecure": true,
+    "winrm_use_ssl": true,
+    "run_tags": {
+      "Owner": "planit"
+    },
+    "tags": {
+        "Name": "Planit Server2012R2 Gold",
+        "OS": "Windows Server 2016R2"
+    },  
+    "launch_block_device_mappings": [{
+      "device_name": "/dev/sda1",
+      "volume_size": 30,
+      "volume_type": "gp2",
+      "delete_on_termination": true
+    }]
+    
+  }],
+    
+  "provisioners": [
+    {
+    "type": "powershell",
+    "scripts": [
+        "../scripts/disable-uac.ps1",
+        "../scripts/YOURSCRIPTHERE.ps1"
+    ]
+  },
+  {
+    "type": "windows-restart",
+    "restart_check_command": "powershell -command \"& {Write-Output 'restarted.'}\""
+  },
+  {
+    "type": "powershell",
+    "inline": [
+      "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeInstance.ps1 -Schedule",
+      "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\SysprepInstance.ps1 -NoShutdown"
+    ]
+  }
+]
+}
