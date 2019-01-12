@@ -19,7 +19,7 @@
       "most_recent": true
     },
     "instance_type": "t2.micro",
-    "ami_name": "planit-ci-test-dev-windows2016-{{timestamp}}",
+    "ami_name": "windows2016Server-{{timestamp}}",
     "user_data_file":"../scripts/SetUpWinRM.ps1",
     "communicator": "winrm",
     "winrm_username": "Administrator",
@@ -29,7 +29,7 @@
       "Owner": "planit"
     },
     "tags": {
-        "Name": "Planit Server2012R2 Gold",
+        "Name": "WindowsServer2012R2 Gold",
         "OS": "Windows Server 2016R2"
     },  
     "launch_block_device_mappings": [{
